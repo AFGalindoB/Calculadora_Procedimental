@@ -5,7 +5,7 @@ from colorama import Style,Fore
 #Hacemos una clase que evalue nuestra expresion
 class EvaluarExpresion:
     #Iniciamos nuestra clase:
-    def __init__(self, Expresion:str, VerPrioridad:str, VerProcedimiento:str, VerRespuesta:str = "SI") -> None:
+    def __init__(self, Expresion:str,  VerProcedimiento:str, VerPrioridad:str = "NO", VerRespuesta:str = "SI") -> None:
         
         #Comprobamos que nuestra expresion sea valida
         self.comprobar_expresion_valida(Expresion)
@@ -444,7 +444,7 @@ class EvaluarExpresion:
     
 class EvaluarFraccionarios(EvaluarExpresion):
     
-    def __init__(self, Expresion: str, VerPrioridad: str, VerProcedimiento: str, VerRespuesta:str = "SI") -> None:
+    def __init__(self, Expresion: str, VerProcedimiento: str, VerPrioridad: str = "NO", VerRespuesta:str = "SI") -> None:
         
         #Comprobamos que si podamos evaluar la expresion
         self.comprobar_expresion_valida(Expresion)
@@ -938,7 +938,7 @@ class EvaluarFraccionarios(EvaluarExpresion):
             return str(Token[0])
 
 class EvaluarPotencias(EvaluarExpresion):
-    def __init__(self, Expresion:str, VerPrioridad:str, VerProcedimiento:str, VerRespuesta:str = "SI") -> None:
+    def __init__(self, Expresion:str, VerProcedimiento:str, VerPrioridad:str = "NO", VerRespuesta:str = "SI") -> None:
             self.comprobar_expresion_valida(Expresion)
             self.respuesta = self.evaluar(Expresion,VerPrioridad,VerProcedimiento,VerRespuesta)
 
@@ -1109,3 +1109,28 @@ class EvaluarPotencias(EvaluarExpresion):
             print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '{Expresion}' ={Fore.MAGENTA} {Solution}\n{Style.RESET_ALL}")
         
         return Token
+
+if __name__ == "__main__":
+    print("¿Que desea realizar?:\n","\t(1) Evaluar operacion","\t(2) Evaluar fraccion\n",sep="\n")
+    while True:
+        try:
+            seleccion = int(input("Ingrese el numero de la operacion que desea realizar: "))
+            if seleccion == 2 or seleccion == 1:
+                break
+            else:
+                print("\nError. Ingrese una de las opciones indicadas\n")
+        except:
+            print("\nError. Ingrese un numero entero\n")
+    expresion = input("Ingrese la expresion que quiere operar: ")
+    if " " in expresion:
+        expresion = "".join(map(str,find(r'-?\d*\.\d+|-?\d+|\+|\-|\*|\/|\(|\)',expresion)))
+    while True:
+        Procedimiento = input("¿Desea ver el procedimiento? (Si/No): ").upper()
+        if Procedimiento == "SI" or Procedimiento == "NO":
+            break
+        else:
+            print("Error. Ingrese solo 'si' o 'no'")
+    if seleccion == 1:
+        Evaluar = EvaluarExpresion(expresion,Procedimiento)
+    elif seleccion == 2:
+        Evaluar = EvaluarFraccionarios(expresion,Procedimiento)
