@@ -1110,7 +1110,7 @@ class EvaluarPotencias(EvaluarExpresion):
         
         return Token
 
-if __name__ == "__main__":
+def main():
     print("¿Que desea realizar?:\n","\t(1) Evaluar operacion","\t(2) Evaluar fraccion\n",sep="\n")
     while True:
         try:
@@ -1134,3 +1134,6 @@ if __name__ == "__main__":
         Evaluar = EvaluarExpresion(expresion,Procedimiento)
     elif seleccion == 2:
         Evaluar = EvaluarFraccionarios(expresion,Procedimiento)
+
+if __name__ == "__main__":
+    main()
