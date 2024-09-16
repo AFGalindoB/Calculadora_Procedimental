@@ -1,5 +1,5 @@
-from CalculadoraVer import EvaluarExpresion as EE
-from CalculadoraVer import EvaluarFraccionarios as EF
+from Evaluar import EvaluarExpresion as EE
+from Evaluar import EvaluarFraccionarios as EF
 from colorama import Fore, Style
 
 Error = False
