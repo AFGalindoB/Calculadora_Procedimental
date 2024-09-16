@@ -1,4 +1,5 @@
 import tkinter as tk
+from re import findall as find
 from functools import partial
 import Evaluar
 
@@ -32,7 +33,11 @@ class Calculadora:
         
         return result
     
+    def convertir_valor(self,entry):
+        return float(entry) if "." in entry else int(entry)
+    
     def calc_basic(self):
+        
         calc = tk.Toplevel()
         calc.title("Calculadora Basica")
         
@@ -41,7 +46,25 @@ class Calculadora:
         
         #Texto
         entry = tk.Label(calc,text="0",font=(self.font,self.sizeText))
-        entry.grid(row=0,column=0,columnspan=5)
+        entry.grid(row=0,column=0,columnspan=6)
+        
+        def execute_functions(index):
+            if index == "C":
+                entry.config(text="0")
+            elif index == "DEL":
+                text = entry.cget("text")
+                if len(text) > 1:
+                    text = text[:-1]
+                    entry.config(text=text)
+                else:
+                    entry.config(text="0")
+            elif index == "+/-":
+                expresion = find(r'-?\d*\.\d+|-?\d+|\+|\-|\*|\/|\(|\)',entry.cget("text"))
+                try:
+                    expresion[-1] = (self.convertir_valor(expresion[-1])*-1)
+                    entry.config(text="".join(map(str,expresion)))
+                except:
+                    pass
         
         #Creamos una funcion para acutalizar el label
         def update_label(index, Evaluar:str=False):
@@ -56,20 +79,26 @@ class Calculadora:
                     entry.config(text=actualtxt + index)
         
         #Definimos los botones
+        functions = ["C","DEL","+/-"]
         nums = ["7","8","9","4","5","6","1","2","3","0","."]
         symbols = ["/","*","-","+"]
         
         solve = tk.Button(calc,text="=",font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label, entry.cget("text"), Evaluar=True))
-        solve.grid(row=4,column=2)
+        solve.grid(row=4,column=3)
+        
+        for i in range(len(functions)):
+            row = (i % 4) + 1
+            function_buttons = tk.Button(calc,text=functions[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(execute_functions,functions[i]))
+            function_buttons.grid(row=row,column=0)
         for i in range(len(nums)):
             row = (i // 3) + 1
-            col = i % 3
+            col = i % 3 + 1
             buttons_nums = tk.Button(calc,text=nums[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label,nums[i]))
             buttons_nums.grid(row=row,column=col)
         for i in range(len(symbols)):
             row = (i % 4) + 1
             buttons_symbols = tk.Button(calc,text=symbols[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label,symbols[i]))
-            buttons_symbols.grid(column=3,row=row)
+            buttons_symbols.grid(column=4,row=row)
     
     def menu(self):
         #Nombre de ventana
