@@ -8,7 +8,7 @@ class EvaluarExpresion:
     def __init__(self, Expresion:str,  VerProcedimiento:str, VerPrioridad:str = "NO", VerRespuesta:str = "SI") -> None:
         
         #Comprobamos que nuestra expresion sea valida
-        self.comprobar_expresion_valida(Expresion)
+        self.comprobar_expresion_valida(Expresion,VerRespuesta)
         
         #Despues de pasar nuestras comprobaciones evaluamos nuestra expresion
         self.respuesta = self.evaluar(Expresion,VerPrioridad,VerProcedimiento,VerRespuesta)
@@ -16,7 +16,7 @@ class EvaluarExpresion:
         #Establecemos atributos utiles para nuestra clase
         self.Expresion = Expresion
     #Comprobamos que nuestra expresion ingresada sea valida
-    def comprobar_expresion_valida(self, Expresion:str) -> None:
+    def comprobar_expresion_valida(self, Expresion:str, VerRespuesta:str) -> None:
         
         if (len(Expresion) == 0):
             print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '0' ={Fore.MAGENTA} 0\n{Style.RESET_ALL}")
@@ -25,6 +25,7 @@ class EvaluarExpresion:
         #Definimos variables generales
         SIMBOLOS = ["+","-","*","/"]
         Error = False
+        Errores = []
         
         #Hacemos comprobaciones antes de evaluar nuestra expresion
         
@@ -33,11 +34,17 @@ class EvaluarExpresion:
             Inicia = Expresion.startswith(SIMBOLOS[i])
             Termina = Expresion.endswith(SIMBOLOS[i])
             if (i != 1 and Inicia == True):
-                print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} su expresion tiene un", SIMBOLOS[i],"al inicio de su expresion\n")
+                TipoError = f"La expresion tiene un {SIMBOLOS[i]} al inicio de su expresion"
+                if VerRespuesta != "NO":
+                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL}", TipoError ,"\n")
                 Error = True
+                Errores.append(TipoError)
             if(Termina == True):
-                print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} su expresion tiene un", SIMBOLOS[i],"al final de su expresion\n")
+                TipoError = f"La expresion tiene un {SIMBOLOS[i]} al final de su expresion"
+                if VerRespuesta != "NO":
+                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 Error = True
+                Errores.append(TipoError)
         
         #Si existen parentesis en la expresion comprobamos que sean de la misma cantidad
         if ("(" in Expresion or ")" in Expresion):
@@ -52,15 +59,23 @@ class EvaluarExpresion:
             else:
                 #Segun la situacion le informamos al usuario su error
                 if (ParentesisDeApertura > ParentesisDeCierre):
-                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} No ah cerrado todos sus parentesis\n")
+                    TipoError = "No ah cerrado todos sus parentesis"
+                    if VerRespuesta != "NO":
+                        print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 else:
                     Contador = ParentesisDeCierre - ParentesisDeApertura
-                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} Ah puesto {Contador} parentesis ')' extra\n")
+                    TipoError = f"Ah puesto {Contador} parentesis ')' extra"
+                    if VerRespuesta != "NO":
+                        print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 Error = True
         
         #Si existe algun error en la ecuacion finalizamos nuestro programa
         if (Error == True):
-            exit()
+            if __name__ == "__main__":
+                exit()
+            else:
+                Errores = ", ".join(map(str,Errores))
+                raise SyntaxError(f"(SyntaxError) {Errores}")
     #Hacemos que una funcion convierta los numeros de un string a valores enteros o flotantes
     def convertir_valor(self,valor):
         return float(valor) if "." in valor else int(valor)

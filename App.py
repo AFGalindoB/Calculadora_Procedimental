@@ -1,6 +1,6 @@
 import tkinter as tk
 from functools import partial
-from CalculadoraVer import EvaluarExpresion
+import Evaluar
 
 class Calculadora:
     
@@ -18,6 +18,20 @@ class Calculadora:
         
         self.main.mainloop()
     
+    def evaluar(self,Exp,Tipo):
+        try:
+            if Tipo == "EE":
+                instancia_evaluar = Evaluar.EvaluarExpresion(Exp,"NO","NO","NO")
+            elif Tipo == "EF":
+                instancia_evaluar = Evaluar.EvaluarFraccionarios(Exp,"NO","NO","NO")
+            result = instancia_evaluar.respuesta
+        except SyntaxError:
+            result = "SyntaxError"
+        except:
+            result = "Error"
+        
+        return result
+    
     def calc_basic(self):
         calc = tk.Toplevel()
         calc.title("Calculadora Basica")
@@ -29,26 +43,23 @@ class Calculadora:
         entry = tk.Label(calc,text="0",font=(self.font,self.sizeText))
         entry.grid(row=0,column=0,columnspan=5)
         
-        def evaluar(Exp):
-            try:
-                result = EvaluarExpresion(Exp,"NO","NO","NO").respuesta
-            except:
-                result = "sintax Error"
-            entry.config(text=str(result))
-        
         #Creamos una funcion para acutalizar el label
-        def update_label(index):
-            actualtxt = entry.cget("text")
-            if index != ".":
-                entry.config(text=index) if actualtxt == "0" else entry.config(text=actualtxt + index)
+        def update_label(index, Evaluar:str=False):
+            if Evaluar:
+                result = self.evaluar(Exp=entry.cget("text"),Tipo="EE")
+                entry.config(text=result)
             else:
-                entry.config(text=actualtxt + index)
+                actualtxt = entry.cget("text")
+                if index != ".":
+                    entry.config(text=index) if actualtxt == "0" or actualtxt == "Error" or actualtxt == "SyntaxError" else entry.config(text=actualtxt + index)
+                else:
+                    entry.config(text=actualtxt + index)
         
         #Definimos los botones
         nums = ["7","8","9","4","5","6","1","2","3","0","."]
         symbols = ["/","*","-","+"]
         
-        solve = tk.Button(calc,text="=",font=(self.font,self.sizeText),width=width,height=heigth,command=partial(evaluar,entry.cget("text")))
+        solve = tk.Button(calc,text="=",font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label, entry.cget("text"), Evaluar=True))
         solve.grid(row=4,column=2)
         for i in range(len(nums)):
             row = (i // 3) + 1
