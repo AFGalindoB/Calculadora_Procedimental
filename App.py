@@ -13,6 +13,8 @@ class Calculadora:
         self.sizeSubtitle = 20
         self.sizeText = 12
         
+        self.memory = None
+        
         #Creamos nuestra interfaz
         self.main = tk.Tk()
         self.menu()
@@ -83,6 +85,28 @@ class Calculadora:
                 except:
                     pass
         
+        def execute_memory(index):
+            if index == "M+" or index == "M-":
+                entrada = find(r'-?\d*\.\d+|-?\d+|\+|\-|\*|\/|\(|\)',entry.cget("text"))
+                if self.memory == None:
+                    try: self.memory = self.convertir_valor(entrada[0] if len(entrada) == 1 else entrada[-1])
+                    except: pass
+                else:
+                    try:
+                        valor = self.convertir_valor(entrada[0] if len(entrada) == 1 else entrada[-1])
+                        self.memory = self.memory + valor if index == "M+" else self.memory - valor
+                    except: pass
+            elif index == "MC":
+                self.memory = None
+            elif index == "MR":
+                if self.memory != None:
+                    entrada = find(r'-?\d*\.\d+|-?\d+|\+|\-|\*|\/|\(|\)',entry.cget("text"))
+                    if len(entrada) == 1:
+                        entry.config(text=str(self.memory))
+                    else:
+                        entrada[-1] = self.memory
+                        entry.config(text="".join(map(str,entrada)))
+        
         #Creamos una funcion para acutalizar el label
         def update_label(index, Evaluar:str=False):
             if Evaluar:
@@ -96,25 +120,31 @@ class Calculadora:
                     entry.config(text=actualtxt + index)
         
         #Definimos los botones
+        memo = ["M+","M-","MR","MC"]
         functions = ["C","DEL","+/-"]
         nums = ["7","8","9","4","5","6","1","2","3","0","."]
         symbols = ["/","*","-","+"]
         
         #Boton del igual para evaluar la expresion
         solve = tk.Button(calc,text="=",command=partial(update_label, entry.cget("text"), Evaluar=True),**button_properties)
-        solve.grid(row=4,column=3)
+        solve.grid(row=5,column=3)
         
+        #Creamos los botones
+        for i in range(len(memo)):
+            col = (i % 4) + 1
+            memo_buttons = tk.Button(calc,text=memo[i],command=partial(execute_memory,memo[i]),**button_properties)
+            memo_buttons.grid(row=1,column=col)
         for i in range(len(functions)):
-            row = (i % 4) + 1
+            row = (i % 4) + 2
             function_buttons = tk.Button(calc,text=functions[i],command=partial(execute_functions,functions[i]),**button_properties)
             function_buttons.grid(row=row,column=0)
         for i in range(len(nums)):
-            row = (i // 3) + 1
+            row = (i // 3) + 2
             col = i % 3 + 1
             buttons_nums = tk.Button(calc,text=nums[i],command=partial(update_label,nums[i]),**button_properties)
             buttons_nums.grid(row=row,column=col)
         for i in range(len(symbols)):
-            row = (i % 4) + 1
+            row = (i % 4) + 2
             buttons_symbols = tk.Button(calc,text=symbols[i],command=partial(update_label,symbols[i]),**button_properties)
             buttons_symbols.grid(column=4,row=row)
     
@@ -133,4 +163,3 @@ class Calculadora:
         calc1.grid(row=2,column=0,pady=20)
 
 Calculadora()
-#Hacer que muestre el resultado de la calc_basic
