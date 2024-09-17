@@ -20,15 +20,19 @@ class Calculadora:
         self.main.mainloop()
     
     def evaluar(self,Exp,Tipo):
+        #Creamos un try except para combrobar si el usuario tiene algun error en su expresion
         try:
             if Tipo == "EE":
                 instancia_evaluar = Evaluar.EvaluarExpresion(Exp,"NO","NO","NO")
             elif Tipo == "EF":
                 instancia_evaluar = Evaluar.EvaluarFraccionarios(Exp,"NO","NO","NO")
+            
             result = instancia_evaluar.respuesta
         except SyntaxError:
+            #Este tipo de error lo retorno Evaluar al comprobar si habia un error en la sintaxis
             result = "SyntaxError"
         except:
+            #Este tipo de error es debido a que algo salio mal al intentar evaluar
             result = "Error"
         
         return result
@@ -38,16 +42,18 @@ class Calculadora:
     
     def calc_basic(self):
         
+        #Creamos la ventana
         calc = tk.Toplevel()
         calc.title("Calculadora Basica")
         
-        width = 3
-        heigth = 2
+        #Definimos atributos para los botones
+        button_properties = {"font":(self.font,self.sizeText),"width":3,"height":2}
         
-        #Texto
+        #Texto de la entrada
         entry = tk.Label(calc,text="0",font=(self.font,self.sizeText))
         entry.grid(row=0,column=0,columnspan=6)
         
+        #Ejecuta funciones de los botones C, DEL, +/-
         def execute_functions(index):
             if index == "C":
                 entry.config(text="0")
@@ -61,7 +67,18 @@ class Calculadora:
             elif index == "+/-":
                 expresion = find(r'-?\d*\.\d+|-?\d+|\+|\-|\*|\/|\(|\)',entry.cget("text"))
                 try:
-                    expresion[-1] = (self.convertir_valor(expresion[-1])*-1)
+                    valor = self.convertir_valor(expresion[-1])
+                    if len(expresion) == 1:
+                        expresion[0] = str(valor*-1)
+                    else:
+                        if valor < 0 and expresion[-2] != "*" and expresion[-2] != "/":
+                            expresion[-1] = "+"+str(valor*-1)
+                        else:
+                            if expresion[-2] == "+":
+                                expresion.pop(-2)
+                                expresion[-1] = str(valor*-1)
+                            else:
+                                expresion[-1] = str(valor*-1)
                     entry.config(text="".join(map(str,expresion)))
                 except:
                     pass
@@ -83,21 +100,22 @@ class Calculadora:
         nums = ["7","8","9","4","5","6","1","2","3","0","."]
         symbols = ["/","*","-","+"]
         
-        solve = tk.Button(calc,text="=",font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label, entry.cget("text"), Evaluar=True))
+        #Boton del igual para evaluar la expresion
+        solve = tk.Button(calc,text="=",command=partial(update_label, entry.cget("text"), Evaluar=True),**button_properties)
         solve.grid(row=4,column=3)
         
         for i in range(len(functions)):
             row = (i % 4) + 1
-            function_buttons = tk.Button(calc,text=functions[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(execute_functions,functions[i]))
+            function_buttons = tk.Button(calc,text=functions[i],command=partial(execute_functions,functions[i]),**button_properties)
             function_buttons.grid(row=row,column=0)
         for i in range(len(nums)):
             row = (i // 3) + 1
             col = i % 3 + 1
-            buttons_nums = tk.Button(calc,text=nums[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label,nums[i]))
+            buttons_nums = tk.Button(calc,text=nums[i],command=partial(update_label,nums[i]),**button_properties)
             buttons_nums.grid(row=row,column=col)
         for i in range(len(symbols)):
             row = (i % 4) + 1
-            buttons_symbols = tk.Button(calc,text=symbols[i],font=(self.font,self.sizeText),width=width,height=heigth,command=partial(update_label,symbols[i]))
+            buttons_symbols = tk.Button(calc,text=symbols[i],command=partial(update_label,symbols[i]),**button_properties)
             buttons_symbols.grid(column=4,row=row)
     
     def menu(self):
