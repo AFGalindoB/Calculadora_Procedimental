@@ -8,10 +8,12 @@ class Calculadora:
     def __init__(self) -> None:
         
         #Definimos atributos recursivos
-        self.font = "BOLD"
-        self.sizeTitle = 50
-        self.sizeSubtitle = 20
-        self.sizeText = 12
+        self.font = "ChillPixels-Maximal"
+        self.sizeTitle = 60
+        self.sizeSubtitle = 30
+        self.sizeText = 20
+        self.style = {"bg":"black","fg":"white"}
+        self.button_properties = {"font":(self.font,self.sizeText),"width":3,"height":2,"bg":"black","fg":"white"}
         
         self.memory = None
         
@@ -47,12 +49,10 @@ class Calculadora:
         #Creamos la ventana
         calc = tk.Toplevel()
         calc.title("Calculadora Basica")
-        
-        #Definimos atributos para los botones
-        button_properties = {"font":(self.font,self.sizeText),"width":3,"height":2}
+        calc.config(bg="black")
         
         #Texto de la entrada
-        entry = tk.Label(calc,text="0",font=(self.font,self.sizeText))
+        entry = tk.Label(calc,text="0",font=(self.font,self.sizeSubtitle),width=12,height=2)
         entry.grid(row=0,column=0,columnspan=6)
         
         #Ejecuta funciones de los botones C, DEL, +/-
@@ -95,9 +95,7 @@ class Calculadora:
                     entry.config(text="".join(map(str,expresion))) #Actualizamos la entrada usando la lista expresion
                     
                 except: pass #Si el except se ejecuta es debido a que la ultima posicion es un simbolo por ende no se hace nada
-        
-            elif index == ".":
-                update_label(index)
+
         #Ejecuta funciones de los botones M+, M-, MC, MR
         def execute_memory(index):
             if index == "M+" or index == "M-":
@@ -136,54 +134,71 @@ class Calculadora:
             else:
                 actualtxt = entry.cget("text")
                 if index != ".":
-                    if actualtxt == "0" and index == "00":
-                        pass
-                    else:
-                        entry.config(text=index) if actualtxt == "0" or actualtxt == "Error" or actualtxt == "SyntaxError" else entry.config(text=actualtxt + index)
+                    entry.config(text=index) if actualtxt == "0" or actualtxt == "Error" or actualtxt == "SyntaxError" else entry.config(text=actualtxt + index)
                 else:
                     entry.config(text=actualtxt + index)
         
-        #Definimos los botones
-        memo = ["M+","M-","MR","MC"]
-        functions = ["PRO","C","DEL","+/-","."]
-        nums = ["7","8","9","4","5","6","1","2","3","0","00"]
-        symbols = ["/","*","-","+"]
-        
-        #Boton del igual para evaluar la expresion
-        solve = tk.Button(calc,text="=",command=partial(update_label, entry.cget("text"), Evaluar=True),**button_properties)
-        solve.grid(row=5,column=3)
-        
         #Creamos los botones
-        for i in range(len(memo)):
-            col = (i % 4) + 1
-            memo_buttons = tk.Button(calc,text=memo[i],command=partial(execute_memory,memo[i]),**button_properties)
-            memo_buttons.grid(row=1,column=col)
-        for i in range(len(functions)):
-            row = (i % 5) + 1
-            function_buttons = tk.Button(calc,text=functions[i],command=partial(execute_functions,functions[i]),**button_properties)
-            function_buttons.grid(row=row,column=0)
-        for i in range(len(nums)):
-            row = (i // 3) + 2
-            col = i % 3 + 1
-            buttons_nums = tk.Button(calc,text=nums[i],command=partial(update_label,nums[i]),**button_properties)
-            buttons_nums.grid(row=row,column=col)
-        for i in range(len(symbols)):
-            row = (i % 4) + 2
-            buttons_symbols = tk.Button(calc,text=symbols[i],command=partial(update_label,symbols[i]),**button_properties)
-            buttons_symbols.grid(column=4,row=row)
+        def buttons():
+            #Definimos los botones
+            memo = ["M+","M-","MR","MC"]
+            functions = ["PRO","C","DEL","+/-"]
+            nums = ["7","8","9","4","5","6","1","2","3","0","."]
+            symbols = ["/","*","-","+"]
+            
+            #Boton del igual para evaluar la expresion
+            solve = tk.Button(calc,text="=",command=partial(update_label, entry.cget("text"), Evaluar=True),**self.button_properties)
+            solve.grid(row=5,column=4)
+            
+            #Creamos los botones de memoria
+            for i in range(len(memo)):
+                col = i % 4
+                memo_buttons = tk.Button(calc,text=memo[i],command=partial(execute_memory,memo[i]),**self.button_properties)
+                memo_buttons.grid(row=1,column=col)
+            #Creamos los botones de funciones 
+            for i in range(len(functions)):
+                row = (i % 5) + 2
+                function_buttons = tk.Button(calc,text=functions[i],command=partial(execute_functions,functions[i]),**self.button_properties)
+                function_buttons.grid(row=row,column=0)
+            #Creamos los botones de numeros
+            for i in range(len(nums)):
+                row = (i // 3) + 2; col = i % 3 + 1
+                
+                #Creamos un condicional para cambiar el formato del boton '0'
+                if nums[i] != "0":
+                    buttons_nums = tk.Button(calc,text=nums[i],command=partial(update_label,nums[i]),**self.button_properties)
+                else:
+                    buttons_nums = tk.Button(calc,text=nums[i],command=partial(update_label,nums[i]),**self.button_properties)
+                    buttons_nums.config(width=self.button_properties["width"]*2)
+                
+                #Debido a que se cambio el formato para el boton '0' se deben hacer ajustes en la grid
+                if nums[i] != "." and nums[i] != "0":
+                    buttons_nums.grid(row=row,column=col)
+                elif nums[i] == ".":
+                    buttons_nums.grid(row=row,column=col + 1)
+                elif nums[i] == "0":
+                    buttons_nums.grid(row=row,column=col,columnspan=2)
+            #Creamos los botones de simbolos
+            for i in range(len(symbols)):
+                row = (i % 4) + 1
+                buttons_symbols = tk.Button(calc,text=symbols[i],command=partial(update_label,symbols[i]),**self.button_properties)
+                buttons_symbols.grid(column=4,row=row)
+        
+        buttons()
     
     def menu(self):
         #Nombre de ventana
         self.main.title("Calculadoras")
+        self.main.config(bg="black")
         
         #Textos
-        title = tk.Label(self.main,text="Bienvenid@",font=(self.font,self.sizeTitle))
+        title = tk.Label(self.main,text="Bienvenid@",font=(self.font,self.sizeTitle),**self.style)
         title.grid(row=0,column=0,columnspan=3)
-        description = tk.Label(self.main,text="¿Que desea realizar?",font=(self.font,self.sizeSubtitle))
+        description = tk.Label(self.main,text="¿Que desea realizar?",font=(self.font,self.sizeSubtitle),**self.style)
         description.grid(row=1,column=0,columnspan=3)
         
         #Botones
-        calc1 = tk.Button(self.main,text="Calculadora Basica",font=(self.font,self.sizeText),height=7,command=self.calc_basic)
+        calc1 = tk.Button(self.main,text="Calculadora Basica",font=(self.font,self.sizeText),height=7,command=self.calc_basic,**self.style)
         calc1.grid(row=2,column=0,pady=20)
 
 Calculadora()

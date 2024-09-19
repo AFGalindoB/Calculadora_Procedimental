@@ -38,7 +38,7 @@ Para usar la calculadora, debes llamar a la clase `EvaluarExpresion` con los sig
 
 Para usar la calculadora tienes 2 opciones
 
-- **Primera Opción:** Ejecutar el archivo CalculadoraVer.py desde tu terminal. Al iniciar, se ejecutará la función main(), la cual te pedirá que elijas 
+- **Primera Opción:** Ejecutar el archivo Evaluar.py desde tu terminal. Al iniciar, se ejecutará la función main(), la cual te pedirá que elijas 
 entre evaluar una operación matemática normal o una fracción.
 
  1) Al ejecutar el archivo, verás el siguiente menú:
@@ -62,7 +62,7 @@ entre evaluar una operación matemática normal o una fracción.
 - **Segunda Opcion:** Si deseas tener mas control sobre como quieres ingresar tus datos puedes seguir la siguente estructura:
 
 	# Importar la clase desde el archivo
-	from CalculadoraVer import EvaluarExpresion, EvaluarFraccionarios
+	from Evaluar import EvaluarExpresion, EvaluarFraccionarios
 
 	# Crear una instancia de la clase EvaluarExpresion o EvaluarFraccionarios "Para ambas clases el ingreso de los datos es el mismo"
 	resultado = EvaluarExpresion(
@@ -71,6 +71,13 @@ entre evaluar una operación matemática normal o una fracción.
 	    VerPrioridad="Sí",
 	    VerRespuesta="Sí"
 	)
+
+- **Tercera Opcion:**  Si prefieres el uso de una interfaz grafica puedes ejecutar el archivo App.py desde tu terminal
+    - Se desplegara una interfaz en la cual te preguntara que deseas hacer
+    - Pulsa el boton Calculadora Basica en la cual se te desplegara otra ventana de una calculadora
+	- Usa la calculadora como usarias otra calculadora ingresando tu expresion matematica
+	- Si deseas ver el procedimiento en la calculadora pulsa el boton 'PRO'
+	- Se desplegara otra ventana en la cual te mostrara el procedimiento de la ecuacion
 
 ### Archivos Extra
 
@@ -129,10 +136,13 @@ entre evaluar una operación matemática normal o una fracción.
 	
 	cd Calculadora_Procedimental
 
- 3) Ejecuta o importa el archivo Python para utilizar la calculadora:
+ 3) Si deseas usar la interfaz grafica primero instala la fuente ChillPixels-Maximal.otf
+
+ 4) Ejecuta o importa el archivo Python para utilizar la calculadora:
 	
-	python CalculadoraVer.py
-	import CalculadoraVer
+	python Evaluar.py #Para ejecutar el archivo Evaluar desde la terminal
+	python App.py #Para ejecutar el archivo App desde la terminal
+	import Evaluar #Para importar Evaluar en tu archivo de python
 
 ## Recomendaciones de Entorno
 
