@@ -1,7 +1,6 @@
 from re import findall as find
 from math import gcd
 from colorama import Style,Fore
-
 #Hacemos una clase que evalue nuestra expresion
 class EvaluarExpresion:
     #Iniciamos nuestra clase:
@@ -10,16 +9,23 @@ class EvaluarExpresion:
         #Comprobamos que nuestra expresion sea valida
         self.comprobar_expresion_valida(Expresion,VerRespuesta)
         
+        #Creamos una lista para los dialogos
+        self.texts = []
+
         #Despues de pasar nuestras comprobaciones evaluamos nuestra expresion
         self.respuesta = self.evaluar(Expresion,VerPrioridad,VerProcedimiento,VerRespuesta)
         
         #Establecemos atributos utiles para nuestra clase
         self.Expresion = Expresion
+    #Creamos un metodo print para cambiar lo que se almacena en el
+    def print(self,*text,sep=" ",end="\n"):
+        if __name__ == "__main__":
+            print(*text,sep=sep,end=end)
     #Comprobamos que nuestra expresion ingresada sea valida
     def comprobar_expresion_valida(self, Expresion:str, VerRespuesta:str) -> None:
         
         if (len(Expresion) == 0):
-            print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '0' ={Fore.MAGENTA} 0\n{Style.RESET_ALL}")
+            self.print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '0' ={Fore.MAGENTA} 0\n{Style.RESET_ALL}")
             exit()
             
         #Definimos variables generales
@@ -36,13 +42,13 @@ class EvaluarExpresion:
             if (i != 1 and Inicia == True):
                 TipoError = f"La expresion tiene un {SIMBOLOS[i]} al inicio de su expresion"
                 if VerRespuesta != "NO":
-                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL}", TipoError ,"\n")
+                    self.print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL}", TipoError ,"\n")
                 Error = True
                 Errores.append(TipoError)
             if(Termina == True):
                 TipoError = f"La expresion tiene un {SIMBOLOS[i]} al final de su expresion"
                 if VerRespuesta != "NO":
-                    print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
+                    self.print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 Error = True
                 Errores.append(TipoError)
         
@@ -61,12 +67,12 @@ class EvaluarExpresion:
                 if (ParentesisDeApertura > ParentesisDeCierre):
                     TipoError = "No ah cerrado todos sus parentesis"
                     if VerRespuesta != "NO":
-                        print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
+                        self.print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 else:
                     Contador = ParentesisDeCierre - ParentesisDeApertura
                     TipoError = f"Ah puesto {Contador} parentesis ')' extra"
                     if VerRespuesta != "NO":
-                        print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
+                        self.print(f"{Style.BRIGHT+Fore.RED}\n(SYNTAX ERROR):{Style.RESET_ALL} {TipoError}\n")
                 Error = True
         
         #Si existe algun error en la ecuacion finalizamos nuestro programa
@@ -175,7 +181,7 @@ class EvaluarExpresion:
         
         #Le informamos al usuario que empezaremos por despejar parentesis
         if (VerPro == "SI"):
-            print(f"Empezamos por despejar nuestros parentesis")
+            self.print(f"Empezamos por despejar nuestros parentesis")
         
         #Contamos los pares de parentesis que hay en nuestra expresion
         ExprTxt = "".join(map(str,Expr))
@@ -191,7 +197,7 @@ class EvaluarExpresion:
             
             #Le informamos al usuario lo que despejaremos
             if (VerPro == "SI"):
-                print(f"Despejamos: (", Temp,")\n",sep="")
+                self.print(f"Despejamos: (", Temp,")\n",sep="")
             
             #Operamos hasta que en nuestros parentesis solo quede un numero
             while len(Temp) > 1:
@@ -257,7 +263,7 @@ class EvaluarExpresion:
             
             #Le informamos al usuario lo que haremos
             if (Ver == "SI"):
-                print(f"{Fore.GREEN}Debido a que tenemos un menos fuera de nuestros parentesis operamos signos - *", Token[Pos],"y despejamos nuestros parentesis",Style.RESET_ALL,"\n")
+                self.print(f"{Fore.GREEN}Debido a que tenemos un menos fuera de nuestros parentesis operamos signos - *", Token[Pos],"y despejamos nuestros parentesis",Style.RESET_ALL,"\n")
             
             #Operamos signos
             if ("." in Token[Pos]):
@@ -292,11 +298,11 @@ class EvaluarExpresion:
             if (Simbolos[i] in Token):
                 Variables[VarName[i]] = Token.index(Simbolos[i])
                 if (Ver == "SI"):
-                    print(f"\tSu simbolo de {NombreSim[i]} se encuentra en la posicion {Variables[VarName[i]]}")
+                    self.print(f"\tSu simbolo de {NombreSim[i]} se encuentra en la posicion {Variables[VarName[i]]}")
             else:
                 Variables[VarName[i]] = "NA"
                 if (Ver == "SI"):
-                    print(f"\tNo se encontro el simbolo de {NombreSim[i]}")
+                    self.print(f"\tNo se encontro el simbolo de {NombreSim[i]}")
         
         #Definimos las prioridades
         if ((isinstance(Variables["BuscarMul"],int) and isinstance(Variables["BuscarDiv"],int)) and (Variables["BuscarMul"]< Variables["BuscarDiv"]) or (Variables["BuscarDiv"] == "NA" and Variables["BuscarMul"] != "NA")):
@@ -318,7 +324,7 @@ class EvaluarExpresion:
         
         #Le informamos al usuario la prioridad
         if (Ver == "SI"):
-            print(f"{Style.BRIGHT}\nPrioridad = '" + Prioridad +f"'{Style.NORMAL}")
+            self.print(f"{Style.BRIGHT}\nPrioridad = '" + Prioridad +f"'{Style.NORMAL}")
         return PrioridadPos
     #Operamos nuestra expresion
     def operar(self,Token:list,Posicion:int,Ver:str) -> list:
@@ -339,7 +345,7 @@ class EvaluarExpresion:
         
         #Le informamos al usuario que operaremos
         if (Ver == "SI"):
-            print(f"\n{Fore.BLUE}{Style.BRIGHT}","="*10," ( ","Operamos:",Token[Posicion - 1],Token[Posicion],Token[Posicion + 1]," ) ","="*10,f"\n{Style.RESET_ALL}",sep="")
+            self.print(f"\n{Fore.BLUE}{Style.BRIGHT}","="*10," ( ","Operamos:",Token[Posicion - 1],Token[Posicion],Token[Posicion + 1]," ) ","="*10,f"\n{Style.RESET_ALL}",sep="")
         
         #Segun el tipo de simbolo operaremos nuestros valores
         if (Sym == "*"):
@@ -348,8 +354,8 @@ class EvaluarExpresion:
             if (ValorDer != 0):
                 Resultado = ValorIzq / ValorDer
             else:
-                print(Fore.RED,"="*10,"No se puede dividir entre 0","-"*10,"\n",Style.RESET_ALL,sep="")
-                print("La ecuacion no puede ser realizada\n")
+                self.print(Fore.RED,"="*10,"No se puede dividir entre 0","-"*10,"\n",Style.RESET_ALL,sep="")
+                self.print("La ecuacion no puede ser realizada\n")
                 exit()
         elif(Sym == "+"):
             Resultado = ValorIzq + ValorDer
@@ -365,7 +371,7 @@ class EvaluarExpresion:
         
         #Le mostramos al usuario el resultado de lo que operamos
         if (Ver == "SI"):
-            print(f"{Fore.BLUE} {ValorIzq} {Fore.RED} {Sym} {Fore.BLUE} {ValorDer} {Fore.RED} =", Style.BRIGHT ,Fore.GREEN, Resultado , Style.RESET_ALL,"\n")
+            self.print(f"{Fore.BLUE} {ValorIzq} {Fore.RED} {Sym} {Fore.BLUE} {ValorDer} {Fore.RED} =", Style.BRIGHT ,Fore.GREEN, Resultado , Style.RESET_ALL,"\n")
         
         #Debido a que si operamos simbolos negativos el resultado va a ser positivo por ende se pierde un simbolo
         if ((Sym == "/" or Sym == "*") and (ValorIzq < 0 and ValorDer < 0)):
@@ -385,9 +391,9 @@ class EvaluarExpresion:
         
         #Creamos un condicional que verifique si hay que informarle al usuario si esta operando la expresion o unos parentesis
         if (Parentesis == "NO"):
-            print(f"{Fore.MAGENTA}Expresion: {Style.RESET_ALL}{Expr}\n")
+            self.print(f"{Fore.MAGENTA}Expresion: {Style.RESET_ALL}{Expr}\n")
         else:
-            print(f"{Fore.MAGENTA}Parentesis a despejar: {Style.RESET_ALL}({Expr})\n")
+            self.print(f"{Fore.MAGENTA}Parentesis a despejar: {Style.RESET_ALL}({Expr})\n")
     #Evaluamos nuestra ecuacion
     def evaluar(self, Expresion:str, VPrioridad:str, VProcedimiento:str,VerRespuesta:str) -> str:
         """Este metodo se encarga de evaluar toda la expresion y encontrar la respuesta organizando el flujo por el cual
@@ -446,10 +452,10 @@ class EvaluarExpresion:
         if (VerRespuesta.upper() == "SI"):
             #Creamos un condicional que nos muestre el valor resultante de nuestra expresion
             if (Token[0] == ResultadoAprox or ResultadoAprox == None):
-                print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '{Expresion}' ={Fore.MAGENTA} {Token[0]}\n{Style.RESET_ALL}")
+                self.print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '{Expresion}' ={Fore.MAGENTA} {Token[0]}\n{Style.RESET_ALL}")
             else:
                 #Si el resultado fue redondeado le mostramos al usuario el resultado sin aproximar y el resultado aproximado
-                print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '{Expresion}' = {Fore.MAGENTA}{Token[0]}{Fore.RED} ≈{Fore.MAGENTA} {ResultadoAprox} \n{Style.RESET_ALL}")
+                self.print(f"{Fore.RED + Style.BRIGHT}\nSu resultado de la ecuacion '{Expresion}' = {Fore.MAGENTA}{Token[0]}{Fore.RED} ≈{Fore.MAGENTA} {ResultadoAprox} \n{Style.RESET_ALL}")
         
         #Retornamos nuestro resultado
         if (ResultadoAprox != None):
